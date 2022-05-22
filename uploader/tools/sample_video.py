@@ -57,6 +57,7 @@ async def generate_sample(location, c, m):
                   "copy",
                   final_location,
               ]
+              await asyncio.create_subprocess_exec(*ffmpeg_cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
               """loop = asyncio.get_event_loop()
               with concurrent.futures.ThreadPoolExecutor() as pool:
                   await loop.run_in_executor(pool, trim_video, location, start, end, final_location)"""
