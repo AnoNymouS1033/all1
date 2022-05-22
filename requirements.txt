@@ -6,7 +6,7 @@ motor
 Pillow
 aiohttp[speedups]
 pyromod
-moviepy
+#moviepy
 hachoir
 tgcrypto
 dnspython
