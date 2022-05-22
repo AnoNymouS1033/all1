@@ -12,7 +12,6 @@ import random
 from ..config import Config
 from collections import defaultdict
 from ..tools.get_duration import get_duration
-from ..tools.aria2 import download_url, starting_aria2
 from ..tools.extention import fix_ext
 from ..tools.thumbnail_fixation import fix_thumb
 from ..tools.namedetect import isdownloadable_link
@@ -110,86 +109,35 @@ async def worker(name, queue):
             download_directory = f"{tmp_directory_for_each_user}/{url_name}"
 
             settings = await c.db.get_all_settings(m.from_user.id)
-            aria2 = settings['aria2']
-            if aria2:
-                aria = await starting_aria2()
+            async with aiohttp.ClientSession() as session: 
+                c_time = time.time()
                 try:
-                    try:
-                        await m.message.edit(text="__Trying to Download....📥__") 
-                        await trace.edit(text=f"**Name:** {m.from_user.mention(style='md')}\n\n**id:** {m.from_user.id}\n\n**UserName:** @{m.from_user.username}\n\n**Link:** {m.message.reply_to_message.text}\n\n**Status:** Downloading 📥", parse_mode='markdown') 
-                    except:
-                        pass
-                    download = aria.add_uris(
-                        uris=[url],
-                        options=None
-                    )
+                    await m.message.edit(text="__Trying to Download....📥__") 
+                    await trace.edit(text=f"**Name:** {m.from_user.mention(style='md')}\n\n**id:** {m.from_user.id}\n\n**UserName:** @{m.from_user.username}\n\n**Link:** {m.message.reply_to_message.text}\n\n**Status:** Downloading 📥", parse_mode='markdown') 
+                except:
+                    pass
+                try:
+                    sts = await download_coroutine(c, m, session, url, download_directory, c_time, id, trace)
+                        
+                    if not sts:
+                        try:
+                            del Config.TIME_GAP1[m.from_user.id]
+                        except:
+                            pass
+                        continue
                 except Exception as e:
                     try:
-                        await m.message.edit(f"**FAILED** \n{e}\nPlease change the library and try again later.")
-                        await trace.edit(text=f"**Name:** {m.from_user.mention(style='md')}\n\n**id:** {m.from_user.id}\n\n**UserName:** @{m.from_user.username}\n\n**Link:** {m.message.reply_to_message.text}\n\n**Status:** Falied Due to {e}", parse_mode='markdown')
+                        del Config.TIME_GAP1[m.from_user.id]
                     except:
                         pass
-                else:
-                    start = time.time()
-                    status = await download_url(
-                        aria,
-                        download.gid,
-                        m.message,
-                        start
-                    )
-                    if not status:
-                        try:
-                            await trace.edit(text=f"**Name:** {m.from_user.mention(style='md')}\n\n**id:** {m.from_user.id}\n\n**UserName:** @{m.from_user.username}\n\n**Link:** {m.message.reply_to_message.text}\n\n**Status:** Process Cancelled", parse_mode='markdown') 
-                        except:
-                            pass
-                        try:
-                            del Config.TIME_GAP1[m.from_user.id]
-                        except:
-                            pass
+                    if str(e) == '':
                         continue
-                    new_directory = aria.get_download(download.gid).name
-                    if not os.path.exists(new_directory):
-                        try:
-                            await m.message.edit('**Download Failed try with other library**')
-                            await trace.edit(text=f"**Name:** {m.from_user.mention(style='md')}\n\n**id:** {m.from_user.id}\n\n**UserName:** @{m.from_user.username}\n\n**Link:** {m.message.reply_to_message.text}\n\n**Status:** DOWNLOAD FAILED", parse_mode='markdown') 
-                        except:
-                            pass
-                        try:
-                            del Config.TIME_GAP1[m.from_user.id]
-                        except:
-                            pass
-                        continue
-                    os.rename(new_directory, download_directory)
-            else:
-                async with aiohttp.ClientSession() as session: 
-                    c_time = time.time()
                     try:
-                        await m.message.edit(text="__Trying to Download....📥__") 
-                        await trace.edit(text=f"**Name:** {m.from_user.mention(style='md')}\n\n**id:** {m.from_user.id}\n\n**UserName:** @{m.from_user.username}\n\n**Link:** {m.message.reply_to_message.text}\n\n**Status:** Downloading 📥", parse_mode='markdown') 
+                        await m.message.edit(f"**Error:**\n\n{e}")
+                        await trace.edit(text=f"**Name:** {m.from_user.mention(style='md')}\n\n**id:** {m.from_user.id}\n\n**UserName:** @{m.from_user.username}\n\n**Link:** {m.message.reply_to_message.text}\n\n**Status:** Failed to aiohttp due to {e}", parse_mode='markdown') 
                     except:
                         pass
-                    try:
-                        sts = await download_coroutine(c, m, session, url, download_directory, c_time, id, trace)
-                        
-                        if not sts:
-                            try:
-                                del Config.TIME_GAP1[m.from_user.id]
-                            except:
-                                pass
-                            continue
-                    except Exception as e:
-                        try:
-                            del Config.TIME_GAP1[m.from_user.id]
-                        except:
-                            pass
-                        if str(e) == '':
-                            continue
-                        try:
-                            await m.message.edit(f"**Error:**\n\n{e}")
-                            await trace.edit(text=f"**Name:** {m.from_user.mention(style='md')}\n\n**id:** {m.from_user.id}\n\n**UserName:** @{m.from_user.username}\n\n**Link:** {m.message.reply_to_message.text}\n\n**Status:** Failed to aiohttp due to {e}", parse_mode='markdown') 
-                        except:
-                            pass
-                        continue
+                    continue
 
             if not os.path.exists(download_directory):
                 if id in Config.ACTIVE_DOWNLOADS:
