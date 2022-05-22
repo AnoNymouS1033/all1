@@ -28,9 +28,6 @@ async def settings(c, m, cb=False):
 
     settings = await c.db.get_all_settings(m.from_user.id)
 
-    library = settings['aria2']
-    library_text = 'Library: aria2 📚' if library else 'Library: aiohttp 📚'
-
     upload_mode = settings['upload_as_file']
     upload_text = 'Upload as File 📤' if upload_mode else 'Upload as Video 📤'
 
@@ -51,8 +48,6 @@ async def settings(c, m, cb=False):
     
 
     settings_btn = [[
-        InlineKeyboardButton(f'{library_text}', callback_data=f"setting+aria2+{not library}")
-        ],[
         InlineKeyboardButton(f'{upload_text}', callback_data=f"setting+upload_as_file+{not upload_mode}")
         ],[
         InlineKeyboardButton(f"Bot Updates: {bot_updates_text}", callback_data=f"setting+bot_updates+{not bot_updates_mode}")
