@@ -4,7 +4,6 @@ js2py
 pytz
 motor
 Pillow
-aria2p
 aiohttp[speedups]
 pyromod
 moviepy
@@ -12,4 +11,4 @@ hachoir
 tgcrypto
 dnspython
 youtube_dl
-pyrogram==1.2.9
+pyrogram==1.4.0
