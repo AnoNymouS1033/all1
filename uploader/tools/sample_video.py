@@ -8,7 +8,6 @@ import random
 import asyncio
 import concurrent.futures
 from .take_screen_shot import take_screen_shot
-from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 from .get_duration import get_duration
 
 
@@ -41,9 +40,26 @@ async def generate_sample(location, c, m):
           # Trying to generate sample video if failes sending error message
           await send_message.edit("😎 **Generating Sample Video**", parse_mode="markdown")
           try:
-              loop = asyncio.get_event_loop()
+              ffmpeg_cmd = [
+                  "ffmpeg",
+                  "-headers",
+                  "IAM:",
+                  "-hide_banner",
+                  "-ss",
+                  str(start),
+                  "-i",
+                  location,
+                  "-t",
+                  str(sample_duration),
+                  "-map",
+                  "0",
+                  "-c",
+                  "copy",
+                  final_location,
+              ]
+              """loop = asyncio.get_event_loop()
               with concurrent.futures.ThreadPoolExecutor() as pool:
-                  await loop.run_in_executor(pool, trim_video, location, start, end, final_location)
+                  await loop.run_in_executor(pool, trim_video, location, start, end, final_location)"""
           except Exception as e:
               await m.reply_text(f"**Error:** {e}")
               await send_message.edit("**Unable to generate samplevideo 🤧**", parse_mode="markdown")
