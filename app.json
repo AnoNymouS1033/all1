@@ -1,0 +1,40 @@
+{
+  "name": "Url uploader Ns Bot",
+  "description": "This is a telegram bot to upload direct links as tg files",
+  "repository": "https://github.com/Ns-AnoNymouS/Upload-Nsbot",
+  "logo": "https://telegra.ph/file/c8aef227dccd95ec80108.jpg",
+  "keywords": [
+    "Best",
+    "Rename",
+    "Telegram Bot"
+   ],
+  "env": {
+    "ENV": {
+      "description": "Set it to anything to enable configuration by environment variables.",
+      "value": "ANYTHING"
+    },
+    "BOT_TOKEN": {
+      "description": "Get it from @BotFather"
+    },
+    "API_ID": {
+      "description": "Your API_ID, Get it from https://my.telegram.org/"
+    },
+    "API_HASH": {
+      "description": "Your API_HASH, Get it from https://my.telegram.org/"
+    },
+    "DATABASE_URL": {
+      "description": "Mongodb token for saving the users data",
+      "value": ""
+    },
+    "AUTH_USERS": {
+      "description": "Auth users who have right to ban.",
+      "value": ""
+    }
+  },
+  "buildpacks": [{
+      "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest.git"
+    },{
+      "url": "heroku/python"
+    }
+  ]
+}
