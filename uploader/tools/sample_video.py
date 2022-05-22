@@ -43,7 +43,7 @@ async def generate_sample(location, c, m):
               ffmpeg_cmd = [
                   "ffmpeg",
                   "-headers",
-                  "IAM:",
+                  "IAM: ",
                   "-hide_banner",
                   "-ss",
                   str(start),
