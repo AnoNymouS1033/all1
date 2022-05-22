@@ -18,7 +18,6 @@ async def help_user(c, m):
     reply_markup = InlineKeyboardMarkup(button)
     await m.reply_text(
         text=TEXT.HELP_USER.format(m.from_user.first_name),
-        parse_mode="html",
         disable_web_page_preview=True,
         reply_markup=reply_markup,
         quote=True
