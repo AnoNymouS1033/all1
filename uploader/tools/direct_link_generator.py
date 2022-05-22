@@ -3,7 +3,6 @@
 import re
 import json
 import aiohttp
-import requests
 import urllib.parse
 from os import popen
 from random import choice
